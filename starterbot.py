@@ -1,9 +1,12 @@
 import os
+import re
 import random
 import time
-import re
+from io import BytesIO
 from slackclient import SlackClient
 from subprocess import call
+import urllib3
+
 
 
 # instantiate Slack client
@@ -14,9 +17,9 @@ starterbot_id = None
 # constants
 RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
 EXAMPLE_COMMAND = "do"
-MAGIC = "magic"
+GO = "go"
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
-entry_code = 15542
+entry_code = random.randint(1000,999999999)
 
 def parse_bot_commands(slack_events):
     """
@@ -46,19 +49,19 @@ def handle_command(command, channel):
         Executes bot command if the command is known
     """
     # Default response is help text for the user
-    default_response = "Not sure what you mean. Try *{}*.".format(EXAMPLE_COMMAND)
+    default_response = "Code denied. Start opening with 'go'"
 
     # Finds and executes the given command, filling in response
     response = None
-    # This is where you start to implement more commands!
-    if command.startswith(EXAMPLE_COMMAND):
-        response = "Sure...write some more code then I can do that!"
 
-    if command.startswith(MAGIC):
+    if command.startswith(GO):
         random_number = random.randint(1000,9999)
         entry_code = random_number
         print("Received initial request")
-        response = "You sure you want to open gate? Code is "+str(random_number)
+        response = "Safe to move the gate? Code is "+str(random_number)
+
+        # Going to need to chuck some code in here to fetch the image locally before uploading
+
         with open('brand.jpg', 'rb') as file_content:
            slack_client.api_call(
              "files.upload",
@@ -68,9 +71,20 @@ def handle_command(command, channel):
     )
 
     if command.startswith(str(entry_code)):
-        response = "You're in! Have fun "
+        response = "Sending the signal to the gate.... here we go!"
         print("Challenge code accepted")
+        # Probably will just call curl to interact with the esp8266 from here. Touch file just to validate I can exect something from cmd line
         call(["/usr/bin/touch", "file"])
+        # Change the code back to something we dont know
+        entry_code = random.randint(1000,999999999)
+        # Going to need to chuck some code in here to fetch the image locally before uploading
+        with open('brand.jpg', 'rb') as file_content:
+           slack_client.api_call(
+             "files.upload",
+             channels="tmptest",
+             file=file_content.read(),
+             title="Result"
+             )
 
     # Sends the response back to the channel
     slack_client.api_call(
@@ -81,7 +95,7 @@ def handle_command(command, channel):
 
 if __name__ == "__main__":
     if slack_client.rtm_connect(with_team_state=False):
-        print("Starter Bot connected and running!")
+        print("Starter Bot connected and running! Initial code: " + str(entry_code))
         # Read bot's user ID by calling Web API method `auth.test`
         starterbot_id = slack_client.api_call("auth.test")["user_id"]
         while True:
