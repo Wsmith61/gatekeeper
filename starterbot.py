@@ -58,7 +58,7 @@ def handle_command(command, channel):
         random_number = random.randint(1000,9999)
         entry_code = random_number
         print("Received initial request")
-        response = "Safe to move the gate? Code is "+str(random_number)
+        response = "Safe to move the gate? Code is "+str(entry_code)
 
         # Going to need to chuck some code in here to fetch the image locally before uploading
 
