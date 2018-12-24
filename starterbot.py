@@ -5,7 +5,6 @@ import time
 from io import BytesIO
 from slackclient import SlackClient
 from subprocess import call
-import urllib3
 
 
 
@@ -61,11 +60,13 @@ def handle_command(command, channel):
         response = "Safe to move the gate? Code is "+str(entry_code)
 
         # Going to need to chuck some code in here to fetch the image locally before uploading
+        call(["/usr/bin/wget", "http://192.168.1.16:8844/snapshot.jpg", "-O","snapshot.jpg"])
 
-        with open('brand.jpg', 'rb') as file_content:
+        with open('snapshot.jpg', 'rb') as file_content:
            slack_client.api_call(
              "files.upload",
-             channels="tmptest",
+             #channels="tmptest",
+             channels=channel,
              file=file_content.read(),
              title="Gate pic"
     )
@@ -74,17 +75,17 @@ def handle_command(command, channel):
         response = "Sending the signal to the gate.... here we go!"
         print("Challenge code accepted")
         # Probably will just call curl to interact with the esp8266 from here. Touch file just to validate I can exect something from cmd line
-        call(["/usr/bin/touch", "file"])
+        call(["./trigger.sh"])
         # Change the code back to something we dont know
-        entry_code = random.randint(1000,999999999)
+        #entry_code = random.randint(1000,999999999)
         # Going to need to chuck some code in here to fetch the image locally before uploading
-        with open('brand.jpg', 'rb') as file_content:
-           slack_client.api_call(
-             "files.upload",
-             channels="tmptest",
-             file=file_content.read(),
-             title="Result"
-             )
+        #with open('brand.jpg', 'rb') as file_content:
+        #   slack_client.api_call(
+        #     "files.upload",
+        #     channels="tmptest",
+        #     file=file_content.read(),
+        #     title="Result"
+        #     )
 
     # Sends the response back to the channel
     slack_client.api_call(
