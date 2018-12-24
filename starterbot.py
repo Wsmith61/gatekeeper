@@ -17,6 +17,7 @@ starterbot_id = None
 RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
 EXAMPLE_COMMAND = "do"
 GO = "go"
+PIC = "pic"
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 entry_code = random.randint(1000,999999999)
 
@@ -69,6 +70,21 @@ def handle_command(command, channel):
              channels=channel,
              file=file_content.read(),
              title="Gate pic"
+    )
+    if command.startswith(PIC):
+        print("Received pic request")
+        response = "Here's the status pic"
+
+        # Going to need to chuck some code in here to fetch the image locally before uploading
+        call(["/usr/bin/wget", "http://192.168.1.16:8844/snapshot.jpg", "-O","snapshot.jpg"])
+
+        with open('snapshot.jpg', 'rb') as file_content:
+           slack_client.api_call(
+             "files.upload",
+             #channels="tmptest",
+             channels=channel,
+             file=file_content.read(),
+             title="Status pic"
     )
 
     if command.startswith(str(entry_code)):
