@@ -73,6 +73,7 @@ def handle_command(command, channel):
     )
     if command.startswith(PIC):
         print("Received pic request")
+        response = ""
 
         # Going to need to chuck some code in here to fetch the image locally before uploading
         call(["/usr/bin/wget", "http://192.168.1.16:8844/snapshot.jpg", "-O","snapshot.jpg"])
