@@ -69,7 +69,7 @@ def handle_command(command, channel):
              #channels="tmptest",
              channels=channel,
              file=file_content.read(),
-             title="Gate pic"
+             title="Gate Pic"
     )
     if command.startswith(PIC):
         print("Received pic request")
