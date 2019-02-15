@@ -5,6 +5,11 @@ import time
 from io import BytesIO
 from slackclient import SlackClient
 from subprocess import call
+from prometheus_client import start_http_server, Summary
+
+
+# Create a metric to track time spent and requests made.
+REQUEST_TIME = Summary('request_processing_seconds', 'Time spent processing request')
 
 
 
@@ -43,6 +48,7 @@ def parse_direct_mention(message_text):
     # the first group contains the username, the second group contains the remaining message
     return (matches.group(1), matches.group(2).strip()) if matches else (None, None)
 
+@REQUEST_TIME.time()
 def handle_command(command, channel):
     global entry_code
     """
@@ -115,6 +121,7 @@ if __name__ == "__main__":
         print("Starter Bot connected and running! Initial code: " + str(entry_code))
         # Read bot's user ID by calling Web API method `auth.test`
         starterbot_id = slack_client.api_call("auth.test")["user_id"]
+        start_http_server(8000)
         while True:
             command, channel = parse_bot_commands(slack_client.rtm_read())
             if command:
