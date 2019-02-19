@@ -22,7 +22,6 @@ starterbot_id = None
 
 # constants
 RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
-EXAMPLE_COMMAND = "do"
 GO = "go"
 PIC = "pic"
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
@@ -95,6 +94,7 @@ def handle_command(command, channel):
              file=file_content.read(),
              title="Status pic"
     )
+        break
 
     if command.startswith(str(entry_code)):
         response = "Sending the signal to the gate.... here we go!"
