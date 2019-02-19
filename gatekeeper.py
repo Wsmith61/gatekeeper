@@ -79,7 +79,7 @@ def handle_command(command, channel):
              file=file_content.read(),
              title="Gate Pic"
     )
-    if command.startswith(PIC):
+    elif command.startswith(PIC):
         print("Received pic request")
         response = ""
 
@@ -94,9 +94,8 @@ def handle_command(command, channel):
              file=file_content.read(),
              title="Status pic"
     )
-        break
 
-    if command.startswith(str(entry_code)):
+    elif command.startswith(str(entry_code)):
         response = "Sending the signal to the gate.... here we go!"
         print("Challenge code accepted")
         # Probably will just call curl to interact with the esp8266 from here. Touch file just to validate I can exect something from cmd line
