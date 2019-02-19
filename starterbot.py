@@ -69,7 +69,7 @@ def handle_command(command, channel):
         response = "Safe to move the gate? Code is "+str(entry_code)
 
         # Going to need to chuck some code in here to fetch the image locally before uploading
-        @PIC_FETCH.time()
+        #@PIC_FETCH.time()
         call(["/usr/bin/wget", "http://192.168.1.16:8844/snapshot.jpg", "-O","snapshot.jpg"])
 
         with open('snapshot.jpg', 'rb') as file_content:
