@@ -2,6 +2,7 @@ import os
 import re
 import random
 import time
+import requests
 from io import BytesIO
 from slackclient import SlackClient
 from subprocess import call
@@ -25,14 +26,27 @@ RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
 GO = "go"
 PIC = "pic"
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
+TIMEOUT= 60
 entry_code = random.randint(1000,999999999)
+entry_code_generated = time.time()
+
+
 
 def parse_bot_commands(slack_events):
+    global entry_code_generated
+    global entry_code
     """
         Parses a list of events coming from the Slack RTM API to find bot commands.
         If a bot command is found, this function returns a tuple of command and channel.
         If its not found, then this function returns None, None.
     """
+
+    if time.time() - entry_code_generated > TIMEOUT:
+        random_number = random.randint(1000,999999)
+        entry_code = random_number
+        entry_code_generated = time.time()
+
+
     for event in slack_events:
         if event["type"] == "message" and not "subtype" in event:
             user_id, message = parse_direct_mention(event["text"])
@@ -52,6 +66,7 @@ def parse_direct_mention(message_text):
 @REQUEST_TIME.time()
 def handle_command(command, channel):
     global entry_code
+    global entry_code_generated
     """
         Executes bot command if the command is known
     """
@@ -64,19 +79,23 @@ def handle_command(command, channel):
     if command.startswith(GO):
         random_number = random.randint(1000,9999)
         entry_code = random_number
-        print("Received initial request")
+        entry_code_generated = time.time()
         response = "Safe to move the gate? Code is "+str(entry_code)
 
         # Going to need to chuck some code in here to fetch the image locally before uploading
         #@PIC_FETCH.time()
-        call(["/usr/bin/wget", "http://192.168.1.16:8844/snapshot.jpg", "-O","snapshot.jpg"])
+        img_data = requests.get("http://192.168.1.16:8844/snapshot.jpg").content
+        with open('image_name.jpg', 'wb') as handler:
+            handler.write(img_data)
+#        call(["/usr/bin/wget", "http://192.168.1.16:8844/snapshot.jpg", "-O","snapshot.jpg"])
 
         with open('snapshot.jpg', 'rb') as file_content:
            slack_client.api_call(
              "files.upload",
              #channels="tmptest",
              channels=channel,
-             file=file_content.read(),
+             #file=file_content.read(),
+             file=img_data,
              title="Gate Pic"
     )
     elif command.startswith(PIC):
