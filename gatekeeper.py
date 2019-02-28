@@ -29,7 +29,10 @@ MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 TIMEOUT= 60
 entry_code = random.randint(1000,999999999)
 entry_code_generated = time.time()
-headers = os.environ.get('HTTP_HEADERS')
+token = os.environ.get('HTTP_HEADERS')
+print(token)
+headers = {"Authorization":(token)}
+print(headers)
 
 
 
@@ -84,37 +87,31 @@ def handle_command(command, channel):
         entry_code_generated = time.time()
         response = "Safe to move the gate? Code is "+str(entry_code)
 
-        # Going to need to chuck some code in here to fetch the image locally before uploading
-        #@PIC_FETCH.time()
-        #img_data = requests.get("http://192.168.1.16:8844/snapshot.jpg", headers=headers).content
         img_data = requests.get("http://192.168.1.16:8123/api/camera_proxy/camera.ffmpeg", headers=headers).content
         with open('image_name.jpg', 'wb') as handler:
             handler.write(img_data)
-#        call(["/usr/bin/wget", "http://192.168.1.16:8844/snapshot.jpg", "-O","snapshot.jpg"])
 
         with open('snapshot.jpg', 'rb') as file_content:
            slack_client.api_call(
              "files.upload",
-             #channels="tmptest",
              channels=channel,
-             #file=file_content.read(),
              file=img_data,
              title="Gate Pic"
     )
     elif command.startswith(PIC):
         print("Received pic request")
         response = "Like what you see?"
-
-        # Going to need to chuck some code in here to fetch the image locally before uploading
-        call(["/usr/bin/wget", "http://192.168.1.16:8844/snapshot.jpg", "-O","snapshot.jpg"])
+        img_data = requests.get("http://192.168.1.16:8123/api/camera_proxy/camera.ffmpeg", headers=headers).content
+        with open('image_name.jpg', 'wb') as handler:
+            handler.write(img_data)
 
         with open('snapshot.jpg', 'rb') as file_content:
            slack_client.api_call(
              "files.upload",
-             #channels="tmptest",
              channels=channel,
-             file=file_content.read(),
-             title="Status pic"
+             file=img_data,
+             title="Gate Pic"
+
     )
 
     elif command.startswith(str(entry_code)):
