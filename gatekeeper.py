@@ -29,6 +29,7 @@ MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 TIMEOUT= 60
 entry_code = random.randint(1000,999999999)
 entry_code_generated = time.time()
+headers = os.environ.get('HTTP_HEADERS')
 
 
 
@@ -67,6 +68,7 @@ def parse_direct_mention(message_text):
 def handle_command(command, channel):
     global entry_code
     global entry_code_generated
+    global headers
     """
         Executes bot command if the command is known
     """
@@ -84,7 +86,8 @@ def handle_command(command, channel):
 
         # Going to need to chuck some code in here to fetch the image locally before uploading
         #@PIC_FETCH.time()
-        img_data = requests.get("http://192.168.1.16:8844/snapshot.jpg").content
+        #img_data = requests.get("http://192.168.1.16:8844/snapshot.jpg", headers=headers).content
+        img_data = requests.get("http://192.168.1.16:8123/api/camera_proxy/camera.ffmpeg", headers=headers).content
         with open('image_name.jpg', 'wb') as handler:
             handler.write(img_data)
 #        call(["/usr/bin/wget", "http://192.168.1.16:8844/snapshot.jpg", "-O","snapshot.jpg"])
