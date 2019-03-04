@@ -91,28 +91,26 @@ def handle_command(command, channel):
         with open('image_name.jpg', 'wb') as handler:
             handler.write(img_data)
 
-        with open('snapshot.jpg', 'rb') as file_content:
-           slack_client.api_call(
-             "files.upload",
+        #with open('snapshot.jpg', 'rb') as file_content:
+        slack_client.api_call(
+            "files.upload",
              channels=channel,
              file=img_data,
              title="Gate Pic"
-    )
+             )
     elif command.startswith(PIC):
         print("Received pic request")
         response = "Like what you see?"
         img_data = requests.get("http://192.168.1.16:8123/api/camera_proxy/camera.ffmpeg", headers=headers).content
         with open('image_name.jpg', 'wb') as handler:
             handler.write(img_data)
-
-        with open('snapshot.jpg', 'rb') as file_content:
-           slack_client.api_call(
-             "files.upload",
+        slack_client.api_call(
+            "files.upload",
              channels=channel,
              file=img_data,
              title="Gate Pic"
+             )
 
-    )
 
     elif command.startswith(str(entry_code)):
         response = "Sending the signal to the gate.... here we go!"
