@@ -92,7 +92,6 @@ def handle_command(command, channel):
         with open('image_name.jpg', 'wb') as handler:
             handler.write(img_data)
 
-        #with open('snapshot.jpg', 'rb') as file_content:
         slack_client.api_call(
             "files.upload",
              channels=channel,
@@ -116,7 +115,6 @@ def handle_command(command, channel):
     elif command.startswith(str(entry_code)):
         response = "Sending the signal to the gate.... here we go!"
         print("Challenge code accepted")
-        # Probably will just call curl to interact with the esp8266 from here. Touch file just to validate I can exect something from cmd line
         call(["./trigger.sh"])
 
     # Sends the response back to the channel
