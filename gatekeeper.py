@@ -16,23 +16,23 @@ PIC_FETCH = Summary('picture_request_seconds', 'Time spent fetching picture')
 
 
 # instantiate Slack client
-#slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 # starterbot's user ID in Slack: value is assigned after the bot starts up
 starterbot_id = None
 
 # constants
 RTM_READ_DELAY = 1 # 1 second delay between reading from RTM
+
 GO = "go"
 PIC = "pic"
+
 MENTION_REGEX = "^<@(|[WU].+?)>(.*)"
 TIMEOUT= 60
 entry_code = random.randint(1000,999999999)
 entry_code_generated = time.time()
 token = os.environ.get('HTTP_HEADERS')
-print(token)
+
 headers = {"Authorization":(token)}
-print(headers)
 
 
 
